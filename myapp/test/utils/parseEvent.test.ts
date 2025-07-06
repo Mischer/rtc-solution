@@ -42,4 +42,38 @@ describe("parseEvent", () => {
         expect(parseEvent(line, mappings)).toEqual(expected);
         expect(logger.error).not.toHaveBeenCalled();
     });
+
+    it("should return null and log error if event line has only 7 params", () => {
+        const lineWith7Words = [
+            "event1",
+            "sportId",
+            "competitionId",
+            "1709900432183",
+            "homeTeamId",
+            "awayTeamId",
+            "PRE",
+        ].join(",");
+
+        expect(parseEvent(lineWith7Words, mappings)).toBeNull();
+        expect(logger.error).toHaveBeenCalledWith(`parseEvent: invalid event line format: ${lineWith7Words}`);
+    });
+
+    it("should parse event line with 9 params (ignores extras)", () => {
+        const lineWith9Words = [
+            "event1",
+            "sportId",
+            "competitionId",
+            "1709900432183",
+            "homeTeamId",
+            "awayTeamId",
+            "PRE",
+            "CURRENT@1:2",
+            "EXTRA_FIELD",
+        ].join(",");
+
+        const result = parseEvent(lineWith9Words, mappings);
+        expect(result).not.toBeNull();
+        expect(result?.id).toBe("event1");
+        expect(logger.error).not.toHaveBeenCalled();
+    });
 });
