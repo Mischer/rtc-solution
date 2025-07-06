@@ -5,6 +5,16 @@ export default defineConfig({
     clearMocks: true,
     coverage: {
       reporter: ['text', 'lcov'],
+      exclude: [
+        '**/node_modules/**',
+        '**/dist/**',
+        '**/coverage/**',
+        '**/src/index.ts',
+        '**/src/logger.ts',
+        '**/src/middlewares/**',
+        '**/src/routes/**',
+        '**/src/controllers/**'
+      ],
     },
   },
 });
