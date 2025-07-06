@@ -20,36 +20,44 @@ export function parseEvent(str: string, mappings: Mappings): Event | null {
         scoresRaw,
     ] = params;
 
-    const sport = mappings[sportId];
-    if (!sport) {
-        logger.error(`Missing mapping for sportId: ${sportId}`);
+    const sport = resolveMapping("sportId", sportId, mappings);
+    const competition = resolveMapping("competitionId", competitionId, mappings);
+    const homeName = resolveMapping("homeTeamId", homeTeamId, mappings);
+    const awayName = resolveMapping("awayTeamId", awayTeamId, mappings);
+    const status = resolveMapping("statusId", statusId, mappings);
+
+    if (!sport || !competition || !homeName || !awayName || !status) {
         return null;
     }
 
-    const competition = mappings[competitionId];
-    if (!competition) {
-        logger.error(`Missing mapping for competitionId: ${competitionId}`);
+    const scores = parseScores(scoresRaw, mappings);
+    if (!scores) {
         return null;
     }
 
-    const homeName = mappings[homeTeamId];
-    if (!homeName) {
-        logger.error(`Missing mapping for homeTeamId: ${homeTeamId}`);
-        return null;
-    }
+    return {
+        id,
+        sport,
+        competition,
+        startTime: new Date(Number(startTimeStr)).toISOString(),
+        competitors: {
+            HOME: { type: "HOME", name: homeName },
+            AWAY: { type: "AWAY", name: awayName },
+        },
+        status,
+        scores,
+    };
+}
 
-    const awayName = mappings[awayTeamId];
-    if (!awayName) {
-        logger.error(`Missing mapping for awayTeamId: ${awayTeamId}`);
-        return null;
+function resolveMapping(label: string, id: string, mappings: Mappings): string | null {
+    const value = mappings[id];
+    if (!value) {
+        logger.error(`Missing mapping for ${label}: ${id}`);
     }
+    return value ?? null;
+}
 
-    const status = mappings[statusId];
-    if (!status) {
-        logger.error(`Missing mapping for statusId: ${statusId}`);
-        return null;
-    }
-
+function parseScores(scoresRaw: string, mappings: Mappings): Record<string, Score> | null {
     const [periodPart, scorePart] = scoresRaw.split("@");
     if (!periodPart || !scorePart || !scorePart.includes(":")) {
         logger.error(`parseEvent: invalid scoresRaw format: ${scoresRaw}`);
@@ -68,21 +76,7 @@ export function parseEvent(str: string, mappings: Mappings): Event | null {
         return null;
     }
 
-    const scores: Record<string, Score> =
-        {
-            [period]: { type: period, home: homeScore, away: awayScore },
-        };
-
     return {
-        id,
-        sport,
-        competition,
-        startTime: new Date(Number(startTimeStr)).toISOString(),
-        competitors: {
-            HOME: { type: "HOME", name: homeName },
-            AWAY: { type: "AWAY", name: awayName },
-        },
-        status,
-        scores,
+        [period]: { type: period, home: homeScore, away: awayScore },
     };
 }
