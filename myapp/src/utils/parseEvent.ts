@@ -1,7 +1,14 @@
 import { Event } from "../model/Event";
 import { Mappings } from "../model/Mappings";
+import {logger} from "../logger";
 
 export function parseEvent(str: string, mappings: Mappings): Event | null {
+    const params = str.split(",");
+    if (params.length < 8) {
+        logger.error(`parseEvent: invalid event line format: ${str}`);
+        return null;
+    }
+
     const [
         id,
         sportId,
@@ -11,7 +18,7 @@ export function parseEvent(str: string, mappings: Mappings): Event | null {
         awayTeamId,
         statusId,
         scoresRaw,
-    ] = str.split(",");
+    ] = params;
 
     return {
         id,
