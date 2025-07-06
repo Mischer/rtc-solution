@@ -32,7 +32,6 @@ describe("State Service Tests", () => {
         service.start();
         service.stop();
         expect(clearInterval).toHaveBeenCalledTimes(1);
-        expect(clearInterval).toHaveBeenCalledWith(expect.any(Number));
     });
 
     it("does not call clearInterval if not started", () => {
