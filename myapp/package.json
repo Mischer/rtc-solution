@@ -1,0 +1,26 @@
+{
+  "name": "myapp",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "description": "Simple app to parse sport events",
+  "author": "Mikhail Kultyiasau",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "dev": "ts-node-dev src/index.ts",
+    "build": "tsc --project tsconfig.build.json",
+    "test": "vitest run --coverage"
+  },
+  "dependencies": {
+    "axios": "1.10.0",
+    "express": "4.21.2",
+    "winston": "3.17.0"
+  },
+  "devDependencies": {
+    "@types/express": "4.17.23",
+    "@types/node": "20.16.0",
+    "ts-node": "10.9.2",
+    "ts-node-dev": "2.0.0",
+    "typescript": "5.8.3",
+    "vitest": "1.6.1"
+  }
+}
