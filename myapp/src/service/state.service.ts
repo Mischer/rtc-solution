@@ -32,12 +32,12 @@ export class StateService {
     }
 
     getCurrentState(): Event[] {
-        return [];
+        return Array.from(this.state.values());
     }
 
     async poll(): Promise<void> {
         try {
-            const [stateRaw, mappingsRaw] = await Promise.all([
+            const [mappingsRaw, stateRaw] = await Promise.all([
                 this.mappingsProvider.fetchMappings(),
                 this.stateProvider.fetchState()
             ]);
