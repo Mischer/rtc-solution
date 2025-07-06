@@ -19,6 +19,9 @@ app.use(express.json());
 // routes
 app.use("/", createStateRouter(stateService));
 
+// error handling
+app.use(errorHandler);
+
 app.listen(port, () => {
     console.log(`Server listening on http://localhost:${port}`);
 });
