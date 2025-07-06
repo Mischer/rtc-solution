@@ -76,4 +76,38 @@ describe("parseEvent", () => {
         expect(result?.id).toBe("event1");
         expect(logger.error).not.toHaveBeenCalled();
     });
+
+    it.each([
+        [
+            "missing sportId",
+            "event1,missingSport,competitionId,1709900432183,homeTeamId,awayTeamId,PRE,CURRENT@1:2",
+            "Missing mapping for sportId: missingSport",
+        ],
+        [
+            "missing homeTeamId",
+            "event1,sportId,competitionId,1709900432183,missingHome,awayTeamId,PRE,CURRENT@1:2",
+            "Missing mapping for homeTeamId: missingHome",
+        ],
+        [
+            "missing competitionId",
+            "event1,sportId,missingCompetition,1709900432183,homeTeamId,awayTeamId,PRE,CURRENT@1:2",
+            "Missing mapping for competitionId: missingCompetition",
+        ],
+        [
+            "missing awayTeamId",
+            "event1,sportId,competitionId,1709900432183,homeTeamId,missingAway,PRE,CURRENT@1:2",
+            "Missing mapping for awayTeamId: missingAway",
+        ],
+        [
+            "missing statusId",
+            "event1,sportId,competitionId,1709900432183,homeTeamId,awayTeamId,missingStatus,CURRENT@1:2",
+            "Missing mapping for statusId: missingStatus",
+        ],
+    ])(
+        "should return null and log error if %s",
+        (_, line, expectedLog) => {
+            expect(parseEvent(line, mappings)).toBeNull();
+            expect(logger.error).toHaveBeenCalledWith(expectedLog);
+        }
+    );
 });
