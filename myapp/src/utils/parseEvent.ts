@@ -1,4 +1,4 @@
-import { Event } from "../model/Event";
+import {Event, Score} from "../model/Event";
 import { Mappings } from "../model/Mappings";
 import {logger} from "../logger";
 
@@ -50,6 +50,29 @@ export function parseEvent(str: string, mappings: Mappings): Event | null {
         return null;
     }
 
+    const [periodPart, scorePart] = scoresRaw.split("@");
+    if (!periodPart || !scorePart || !scorePart.includes(":")) {
+        logger.error(`parseEvent: invalid scoresRaw format: ${scoresRaw}`);
+        return null;
+    }
+
+    const [homeScore, awayScore] = scorePart.split(":");
+    if (!homeScore || !awayScore) {
+        logger.error(`parseEvent: invalid scoresRaw format: ${scoresRaw}`);
+        return null;
+    }
+
+    const period = mappings[periodPart];
+    if (!period) {
+        logger.error(`Missing mapping for periodId: ${periodPart}`);
+        return null;
+    }
+
+    const scores: Record<string, Score> =
+        {
+            [period]: { type: period, home: homeScore, away: awayScore },
+        };
+
     return {
         id,
         sport,
@@ -60,12 +83,6 @@ export function parseEvent(str: string, mappings: Mappings): Event | null {
             AWAY: { type: "AWAY", name: awayName },
         },
         status,
-        scores: {
-            CURRENT: {
-                type: "CURRENT",
-                home: scoresRaw.split("@")[1].split(":")[0],
-                away: scoresRaw.split("@")[1].split(":")[1],
-            },
-        },
+        scores,
     };
 }
