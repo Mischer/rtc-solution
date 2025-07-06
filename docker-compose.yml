@@ -5,3 +5,12 @@ services:
     image: mysteriouscrawler/test
     ports:
       - "3000:3000"
+
+  myapp:
+    build:
+      context: ./myapp
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    depends_on:
+      - simulation

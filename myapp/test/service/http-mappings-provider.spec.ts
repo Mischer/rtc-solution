@@ -24,7 +24,7 @@ describe("Http Mappings Provider Tests", () => {
 
         const result = await provider.fetchMappings();
 
-        expect(mockedAxios.get).toHaveBeenCalledWith("http://localhost:3000/api/mappings");
+        expect(mockedAxios.get).toHaveBeenCalledWith("http://simulation:3000/api/mappings");
         expect(result).toBe("foo:bar");
     });
 

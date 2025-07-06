@@ -24,7 +24,7 @@ describe("Http State Provider Tests", () => {
 
         const result = await provider.fetchState();
 
-        expect(mockedAxios.get).toHaveBeenCalledWith("http://localhost:3000/api/state");
+        expect(mockedAxios.get).toHaveBeenCalledWith("http://simulation:3000/api/state");
         expect(result).toBe("event1,event2");
     });
 
