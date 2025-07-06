@@ -1,5 +1,8 @@
+import axios from "axios";
+
 export class HttpMappingsProvider {
     async fetchMappings(): Promise<string> {
-        return Promise.resolve("");
+        const response = await axios.get("http://localhost:3000/api/mappings");
+        return response.data.mappings;
     }
 }
