@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { parseEvent } from "../../src/utils/parseEvent";
+import { parseEvent } from "../../src/utils/parse-event";
 import { logger } from "../../src/logger";
 import { Event } from "../../src/model/Event";
 import { Mappings } from "../../src/model/Mappings";

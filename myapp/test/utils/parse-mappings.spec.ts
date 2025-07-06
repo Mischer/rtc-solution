@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { parseMappings } from "../../src/utils/parseMappings";
+import { parseMappings } from "../../src/utils/parse-mappings";
 import { Mappings } from "../../src/model/Mappings";
 import { logger } from "../../src/logger";
 
