@@ -121,5 +121,6 @@ describe("State Service Tests", () => {
 
         const current = stateService.getCurrentState();
         expect(current).toHaveLength(0);
+        expect(logger.info).toHaveBeenCalledWith("Event removed: e1");
     });
 });

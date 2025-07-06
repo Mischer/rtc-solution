@@ -4,6 +4,7 @@ import {parseMappings} from "../utils/parse-mappings";
 import {parseEvent} from "../utils/parse-event";
 import {Event} from "../model/Event";
 import {logger} from "../logger";
+import {Mappings} from "../model/Mappings";
 
 export class StateService {
     private state = new Map<string, Event>();
@@ -43,51 +44,81 @@ export class StateService {
             ]);
 
             const mappings = parseMappings(mappingsRaw);
-            const eventLines = stateRaw.split("\n").map(l => l.trim()).filter((line) => line.length > 0);
+            const eventLines = this.parseEventLines(stateRaw);
 
             const seenIds = new Set<string>();
-
-            for (const line of eventLines) {
-                const event = parseEvent(line, mappings);
-                if (!event) {
-                    continue;
-                }
-
-                seenIds.add(event.id);
-
-                const existingEvent = this.state.get(event.id);
-                if (!existingEvent) {
-                    logger.info(`New event added: ${event.id}`);
-                    this.state.set(event.id, event);
-                } else {
-                    let isChanged = false;
-
-                    if (existingEvent.status !== event.status) {
-                        logger.info(`Event ${event.id} status changed: ${existingEvent.status} -> ${event.status}`);
-                        isChanged = true;
-                    }
-
-                    const exisitngScores = JSON.stringify(existingEvent.scores);
-                    const newScores = JSON.stringify(event.scores);
-                    if (exisitngScores !== newScores) {
-                        logger.info(`Event ${event.id} scores changed: ${exisitngScores} -> ${newScores}`);
-                        isChanged = true;
-                    }
-
-                    if (isChanged) {
-                        this.state.set(event.id, event);
-                    }
-                }
-            }
-
-            for (const [id, event] of this.state.entries()) {
-                if (!seenIds.has(id) && event.status !== "REMOVED") {
-                    logger.info(`Event removed: ${id}`);
-                    event.status = "REMOVED";
-                }
-            }
+            this.processEvents(eventLines, mappings, seenIds);
+            this.markRemovedEvents(seenIds);
         } catch (err) {
             logger.error(`poll() failed: ${err}`);
+        }
+    }
+
+    /**
+     * Parse state string into trimmed, non-empty lines
+     */
+    private parseEventLines(stateRaw: string): string[] {
+        return stateRaw
+            .split("\n")
+            .map(line => line.trim())
+            .filter(line => line.length > 0);
+    }
+
+    /**
+     * Process all event lines, updating state and collecting seen IDs
+     */
+    private processEvents(eventLines: string[], mappings: Mappings, seenIds: Set<string>): void {
+        for (const line of eventLines) {
+            const event = parseEvent(line, mappings);
+            if (!event) continue;
+
+            seenIds.add(event.id);
+            this.updateOrInsertEvent(event);
+        }
+    }
+
+    /**
+     * Update or insert a single event, logging any changes
+     */
+    private updateOrInsertEvent(event: Event): void {
+        const existingEvent = this.state.get(event.id);
+        if (!existingEvent) {
+            logger.info(`New event added: ${event.id}`);
+            this.state.set(event.id, event);
+            return;
+        }
+
+        let isChanged = false;
+        if (existingEvent.status !== event.status) {
+            logger.info(
+                `Event ${event.id} status changed: ${existingEvent.status} -> ${event.status}`
+            );
+            isChanged = true;
+        }
+
+        const prevScores = JSON.stringify(existingEvent.scores);
+        const newScores = JSON.stringify(event.scores);
+        if (prevScores !== newScores) {
+            logger.info(
+                `Event ${event.id} scores changed: ${prevScores} -> ${newScores}`
+            );
+            isChanged = true;
+        }
+
+        if (isChanged) {
+            this.state.set(event.id, event);
+        }
+    }
+
+    /**
+     * Mark events as REMOVED if they were not seen in this cycle
+     */
+    private markRemovedEvents(seenIds: Set<string>): void {
+        for (const [id, event] of this.state.entries()) {
+            if (!seenIds.has(id) && event.status !== "REMOVED") {
+                logger.info(`Event removed: ${id}`);
+                event.status = "REMOVED";
+            }
         }
     }
 }
