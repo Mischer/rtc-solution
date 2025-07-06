@@ -20,16 +20,46 @@ export function parseEvent(str: string, mappings: Mappings): Event | null {
         scoresRaw,
     ] = params;
 
+    const sport = mappings[sportId];
+    if (!sport) {
+        logger.error(`Missing mapping for sportId: ${sportId}`);
+        return null;
+    }
+
+    const competition = mappings[competitionId];
+    if (!competition) {
+        logger.error(`Missing mapping for competitionId: ${competitionId}`);
+        return null;
+    }
+
+    const homeName = mappings[homeTeamId];
+    if (!homeName) {
+        logger.error(`Missing mapping for homeTeamId: ${homeTeamId}`);
+        return null;
+    }
+
+    const awayName = mappings[awayTeamId];
+    if (!awayName) {
+        logger.error(`Missing mapping for awayTeamId: ${awayTeamId}`);
+        return null;
+    }
+
+    const status = mappings[statusId];
+    if (!status) {
+        logger.error(`Missing mapping for statusId: ${statusId}`);
+        return null;
+    }
+
     return {
         id,
-        sport: mappings[sportId],
-        competition: mappings[competitionId],
+        sport,
+        competition,
         startTime: new Date(Number(startTimeStr)).toISOString(),
         competitors: {
-            HOME: { type: "HOME", name: mappings[homeTeamId] },
-            AWAY: { type: "AWAY", name: mappings[awayTeamId] },
+            HOME: { type: "HOME", name: homeName },
+            AWAY: { type: "AWAY", name: awayName },
         },
-        status: mappings[statusId],
+        status,
         scores: {
             CURRENT: {
                 type: "CURRENT",
