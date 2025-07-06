@@ -110,4 +110,65 @@ describe("parseEvent", () => {
             expect(logger.error).toHaveBeenCalledWith(expectedLog);
         }
     );
+
+    it("should parse scoresRaw with mapped period", () => {
+        const line = "event1,sportId,competitionId,1709900432183,homeTeamId,awayTeamId,PRE,CURRENT@1:2";
+
+        const result = parseEvent(line, mappings);
+
+        expect(result?.scores["CURRENT"]).toEqual({
+            type: "CURRENT",
+            home: "1",
+            away: "2",
+        });
+    });
+
+    it("should return null and log error if scoresRaw contains unknown periodId", () => {
+        const line =
+            "event1,sportId,competitionId,1709900432183,homeTeamId,awayTeamId,PRE,unknownPeriod@1:2";
+
+        expect(parseEvent(line, mappings)).toBeNull();
+        expect(logger.error).toHaveBeenCalledWith(
+            "Missing mapping for periodId: unknownPeriod"
+        );
+    });
+
+    it.each([
+        [
+            "missing @ separator",
+            "event1,sportId,competitionId,1709900432183,homeTeamId,awayTeamId,PRE,invalidScoresRaw",
+            "parseEvent: invalid scoresRaw format: invalidScoresRaw",
+        ],
+        [
+            "missing : in score part",
+            "event1,sportId,competitionId,1709900432183,homeTeamId,awayTeamId,PRE,CURRENT@invalid",
+            "parseEvent: invalid scoresRaw format: CURRENT@invalid",
+        ],
+        [
+            "empty after @",
+            "event1,sportId,competitionId,1709900432183,homeTeamId,awayTeamId,PRE,CURRENT@",
+            "parseEvent: invalid scoresRaw format: CURRENT@",
+        ],
+        [
+            "missing away score",
+            "event1,sportId,competitionId,1709900432183,homeTeamId,awayTeamId,PRE,CURRENT@1:",
+            "parseEvent: invalid scoresRaw format: CURRENT@1:",
+        ],
+        [
+            "missing home score",
+            "event1,sportId,competitionId,1709900432183,homeTeamId,awayTeamId,PRE,CURRENT@:2",
+            "parseEvent: invalid scoresRaw format: CURRENT@:2",
+        ],
+        [
+            "both home and away scores empty",
+            "event1,sportId,competitionId,1709900432183,homeTeamId,awayTeamId,PRE,CURRENT@:",
+            "parseEvent: invalid scoresRaw format: CURRENT@:",
+        ],
+    ])(
+        "should return null and log error if scoresRaw is invalid: %s",
+        (_, line, expectedLog) => {
+            expect(parseEvent(line, mappings)).toBeNull();
+            expect(logger.error).toHaveBeenCalledWith(expectedLog);
+        }
+    );
 });
