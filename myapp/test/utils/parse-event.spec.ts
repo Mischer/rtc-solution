@@ -123,6 +123,30 @@ describe("parseEvent", () => {
         });
     });
 
+    it("should correctly parse multiple score periods", () => {
+        const line =
+            "event1,sportId,competitionId,1709900432183,homeTeamId,awayTeamId,PRE," +
+            "e2d12fef@1:2|6c036000@3:4";
+
+        const mappings: Mappings = {
+            sportId: "FOOTBALL",
+            competitionId: "UEFA",
+            homeTeamId: "Real Madrid",
+            awayTeamId: "Barcelona",
+            PRE: "PRE",
+            e2d12fef: "CURRENT",
+            "6c036000": "PERIOD_1",
+        };
+
+        const result = parseEvent(line, mappings);
+
+        expect(result).not.toBeNull();
+        expect(result!.scores).toEqual({
+            CURRENT: { type: "CURRENT", home: "1", away: "2" },
+            PERIOD_1: { type: "PERIOD_1", home: "3", away: "4" },
+        });
+    });
+
     it("should return null and log error if scoresRaw contains unknown periodId", () => {
         const line =
             "event1,sportId,competitionId,1709900432183,homeTeamId,awayTeamId,PRE,unknownPeriod@1:2";
