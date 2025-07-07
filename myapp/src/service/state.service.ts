@@ -1,5 +1,5 @@
-import {HttpStateProvider} from "./http-state-provider";
-import {HttpMappingsProvider} from "./http-mappings-provider";
+import {HttpStateProvider} from "./http-state.provider";
+import {HttpMappingsProvider} from "./http-mappings.provider";
 import {parseMappings} from "../utils/parse-mappings";
 import {parseEvent} from "../utils/parse-event";
 import {Event} from "../model/Event";

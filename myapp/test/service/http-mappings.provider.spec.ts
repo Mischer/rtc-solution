@@ -1,4 +1,4 @@
-import { HttpMappingsProvider } from "../../src/service/http-mappings-provider";
+import { HttpMappingsProvider } from "../../src/service/http-mappings.provider";
 import axios from "axios";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 

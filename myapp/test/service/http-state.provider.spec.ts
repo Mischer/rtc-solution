@@ -1,6 +1,6 @@
 import axios from "axios";
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import {HttpStateProvider} from "../../src/service/http-state-provider";
+import {HttpStateProvider} from "../../src/service/http-state.provider";
 
 type MockedAxios = {
     get: ReturnType<typeof vi.fn>;

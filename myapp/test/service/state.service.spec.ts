@@ -1,7 +1,7 @@
 import { StateService } from "../../src/service/state.service";
 import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
-import {HttpMappingsProvider} from "../../src/service/http-mappings-provider";
-import {HttpStateProvider} from "../../src/service/http-state-provider";
+import {HttpMappingsProvider} from "../../src/service/http-mappings.provider";
+import {HttpStateProvider} from "../../src/service/http-state.provider";
 import {logger} from "../../src/logger";
 
 describe("State Service Tests", () => {
