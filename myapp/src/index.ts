@@ -1,9 +1,9 @@
 import express from "express";
-import {HttpMappingsProvider} from "./service/http-mappings-provider";
+import {HttpMappingsProvider} from "./service/http-mappings.provider";
 import {createStateRouter} from "./routes/state.routes";
 import {errorHandler} from "./middlewares/error-handler";
 import {StateService} from "./service/state.service";
-import {HttpStateProvider} from "./service/http-state-provider";
+import {HttpStateProvider} from "./service/http-state.provider";
 
 const app = express();
 const port = 3001;
