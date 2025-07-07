@@ -58,25 +58,30 @@ function resolveMapping(label: string, id: string, mappings: Mappings): string |
 }
 
 function parseScores(scoresRaw: string, mappings: Mappings): Record<string, Score> | null {
-    const [periodPart, scorePart] = scoresRaw.split("@");
-    if (!periodPart || !scorePart || !scorePart.includes(":")) {
-        logger.error(`parseEvent: invalid scoresRaw format: ${scoresRaw}`);
-        return null;
+    const scores: Record<string, Score> = {};
+
+    const periods = scoresRaw.split("|");
+    for (const periodStr of periods) {
+        const [periodPart, scorePart] = periodStr.split("@");
+        if (!periodPart || !scorePart || !scorePart.includes(":")) {
+            logger.error(`parseEvent: invalid scoresRaw format: ${scoresRaw}`);
+            return null;
+        }
+
+        const [homeScore, awayScore] = scorePart.split(":");
+        if (!homeScore || !awayScore) {
+            logger.error(`parseEvent: invalid scoresRaw format: ${scoresRaw}`);
+            return null;
+        }
+
+        const period = mappings[periodPart];
+        if (!period) {
+            logger.error(`Missing mapping for periodId: ${periodPart}`);
+            return null;
+        }
+
+        scores[period] = {type: period, home: homeScore, away: awayScore};
     }
 
-    const [homeScore, awayScore] = scorePart.split(":");
-    if (!homeScore || !awayScore) {
-        logger.error(`parseEvent: invalid scoresRaw format: ${scoresRaw}`);
-        return null;
-    }
-
-    const period = mappings[periodPart];
-    if (!period) {
-        logger.error(`Missing mapping for periodId: ${periodPart}`);
-        return null;
-    }
-
-    return {
-        [period]: { type: period, home: homeScore, away: awayScore },
-    };
+    return scores;
 }
