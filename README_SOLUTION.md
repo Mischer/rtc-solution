@@ -43,4 +43,8 @@ Solution Highlights
 • REMOVED events are marked internally but excluded from the response
 • Clean modular structure (SRP, testable, Docker‑ready)
 
+Feature recommendations to enhance the app
+•	Add ESLint and Prettier
+•	Move hard‑coded URLs to a .env file
+
 Delivered by Mikhail Kultyiasau, 2025‑07‑06
