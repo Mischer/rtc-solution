@@ -32,6 +32,10 @@ You can test the endpoint, for example:
 
 `npm run test --coverage`
 
+4. Run e2e tests
+
+`npm run test:e2e`
+
 Solution Highlights
 • TypeScript + Express
 • TDD with >80% test coverage
