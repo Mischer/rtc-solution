@@ -64,13 +64,13 @@ function parseScores(scoresRaw: string, mappings: Mappings): Record<string, Scor
     for (const periodStr of periods) {
         const [periodPart, scorePart] = periodStr.split("@");
         if (!periodPart || !scorePart || !scorePart.includes(":")) {
-            logger.error(`parseEvent: invalid scoresRaw format: ${scoresRaw}`);
+            logger.error(`parseEvent: invalid scoresRaw format: ${scoresRaw || '<empty>'}`);
             return null;
         }
 
         const [homeScore, awayScore] = scorePart.split(":");
         if (!homeScore || !awayScore) {
-            logger.error(`parseEvent: invalid scoresRaw format: ${scoresRaw}`);
+            logger.error(`parseEvent: invalid scoresRaw format: ${scoresRaw || '<empty>'}`);
             return null;
         }
 
